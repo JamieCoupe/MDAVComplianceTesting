@@ -1,0 +1,11 @@
+Topic 
+    about_mdavcompliance
+
+SHORT DESCRIPTIOn
+    A powershell module to measure the compliance of MDAV to set configuration.
+
+EXAMPLES 
+    Use 'Get-Command -Module mdavcompliance' to view functions of the module.
+
+SEE ALSO 
+    
