@@ -38,7 +38,16 @@ Describe $module -Tags ('unit'){
             }
 
             It "Should be an advanced function" {
-                $global:function.FullName | Shgould - FileContentMatch
+                $global:function.FullName | Should -FileContentMatch 'function'
+                $global:function.FullName | Should -FileContentMatch 'cmdletbinding'
+                $global:function.FullName | Should -FileContentMatch 'param'
+            }
+
+            It "has Valid Powershell Code" {
+                $psFile = Get-Content -Path $global:function.FullName -ErrorAction Stop
+                $errors = $null
+                $null = [System.Management.Automation.PSParser]::Tokenize($psFile,[ref]$errors)
+                $errors.Count | Should -Be 0
             }
         }
     }
