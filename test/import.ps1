@@ -1,4 +1,4 @@
-$here = Split-Path -Parent -Path $MyInvocation.MyCommand.Parameters -ErrorAction Stop
+$here = Split-Path -Parent -Path $MyInvocation.MyCommand.Path -ErrorAction Stop
 
 #Dot Source Pester functions 
 if(Test-Path (Join-Path -Path $here -ChildPath 'helpers')){
@@ -14,7 +14,8 @@ $global:moduleTests = $here
 
 #Import Function for prior to tests
 function BeforeTest { 
-    Import-Module $moduleManifest.FullName -Scope Global
+    #Import-Module $moduleManifest.FullName -Scope Global
+    Import-Module "$($here)\..\src\mdavcompliance.psd1"
 }
 
 #Remove Function for after tests
