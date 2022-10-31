@@ -1,4 +1,4 @@
-function Scramble-MDAVConfiguration { 
+function Set-RandomMDAVConfiguration { 
     [Cmdletbinding()]
     param()
 
