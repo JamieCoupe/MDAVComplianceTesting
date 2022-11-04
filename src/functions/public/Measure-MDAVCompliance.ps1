@@ -8,7 +8,7 @@ function Measure-MDAVCompliance {
         #Get Expected config as reusable hashmap
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Getting Expected Configuration"
         $expectedConfiguration = Get-ExpectedConfig
-        $actualConfiguration  = Get-ActualConfig
+        $actualConfiguration  = Get-ActualConfig -ExpectedConfiguration $expectedConfiguration
     }
 
     process {

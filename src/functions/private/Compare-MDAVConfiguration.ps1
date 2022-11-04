@@ -19,32 +19,34 @@ function Compare-MdavConfiguration {
         #Loop expected settings from config
         $configurationComparison = @()
         foreach ($expectedSetting in $ExpectedConfiguration.GetEnumerator()) {
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Setting Name $($expectedSetting.Name)"
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Setting Value $($expectedSetting.Value)"
+            Write-Verbose  -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): ########################TEST-START########################"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting: $($expectedSetting.Name)"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Value: $($expectedSetting.Value)"
             $testState = $false
             
             #Use Actualconfig hashtable as a lookup for the expected value 
-            try{
+            try {
                 $actualSettingValue = $ActualConfiguration[$expectedSetting.Name]
-            } catch { 
+            }
+            catch { 
                 #Output error if the actual value doesnt exist
                 $err = $_
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error getting setting value $($err)"
                 $actualSettingValue = "Error getting setting value"
             }
             
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Actual Setting Value $($actualSettingValue)"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Actual Value: $($actualSettingValue)"
 
             #Change the state if it matches or not 
-            if ($expectedSetting.Value -ne $actualSettingValue) {
-                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Value doesnt match"
+            if ($expectedSetting.Value -ne $actualSettingValue) { 
                 $testState = $false
             }
             else {
-                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Value matches"
                 $testState = $true
             }
 
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Result: $($testState)"
+            Write-Verbose  -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): #########################TEST-END#########################"
 
             #Create custom output object 
             $testResult = [PSCustomObject]@{

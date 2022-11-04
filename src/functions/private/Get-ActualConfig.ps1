@@ -1,9 +1,14 @@
 function Get-ActualConfig {
     [Cmdletbinding()]
-    param()
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $ExpectedConfiguration
+    )
 
     begin {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
+
     }
 
     process {
