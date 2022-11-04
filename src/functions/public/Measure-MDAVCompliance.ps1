@@ -34,17 +34,13 @@ function Measure-MDAVCompliance {
         #Get the actual config for a setting in the expected HashMap
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Filtering for Choosen Settings"
         $filteredActualConfiguration = @{}
-        $formattedExpectedConfig = @()
 
         foreach ($setting in $expectedSettingNames){
             #Add current config to Array
             $filteredActualConfiguration += @{$setting = $mpPreference.$setting}
         }
-        $filteredActualConfiguration = $filteredActualConfiguration | Sort-Object Keys -Descending
 
-        $filteredActualConfiguration | ConvertTo-Json | out-file "actual.json"
-        $expectedConfiguration | ConvertTo-Json | Out-File "expected.json"
-
+        #Debug output to check data getting measured
         Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Filtered actual config = $($filteredActualConfiguration | ConvertTo-Json)"
         Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Formatted expected config = $($expectedConfiguration | ConvertTo-Json)"
 
@@ -55,6 +51,6 @@ function Measure-MDAVCompliance {
 
     end {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
-        return $filteredActualConfiguration, $formattedExpectedConfig
+        return  $complianceResults
     }
 }

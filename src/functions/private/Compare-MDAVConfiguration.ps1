@@ -2,10 +2,10 @@ function Compare-MdavConfiguration {
     [CmdletBinding()]
     param (
         # Parameter help description
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ActualConfiguration,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ExpectedConfiguration
     )
@@ -15,40 +15,53 @@ function Compare-MdavConfiguration {
     }
 
     process {
-        $matchingSettings = @()
-        $nonmatchingSettings = @()
 
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Actual Configuration Keys $($ActualConfiguration.keys)"
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Configuration Keys $($ExpectedConfiguration.keys)"
-
-        if($ActualConfiguration.keys -eq $ExpectedConfiguration.keys){
+        #Loop expected settings from config
+        $configurationComparison = @()
+        foreach ($expectedSetting in $ExpectedConfiguration.GetEnumerator()) {
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Setting Name $($expectedSetting.Name)"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Expected Setting Value $($expectedSetting.Value)"
+            $testState = $false
             
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Key lists are equal"
-    #     foreach ($actualSetting in $ActualConfiguration){
-            #         for expected setting in $ExpectedConfiguration
-            #             if the have the same name, 
-            #                 if the have the same value,
-            #                     Add to matching 
-            #                 else {
-            #                     Add to nonmatching 
-            #                 }
-            #             else 
-            #                 move on 
-                        
-            #             case for in one but not the other  
-        }
-        
-        else {
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Key lists are not equal"
-        #     extract non-matching keys to nonmatching 
+            #Use Actualconfig hashtable as a lookup for the expected value 
+            try{
+                $actualSettingValue = $ActualConfiguration[$expectedSetting.Name]
+            } catch { 
+                #Output error if the actual value doesnt exist
+                $err = $_
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error getting setting value $($err)"
+                $actualSettingValue = "Error getting setting value"
+            }
+            
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Actual Setting Value $($actualSettingValue)"
 
-        #     bubble filter as above 
-        
-        }
+            #Change the state if it matches or not 
+            if ($expectedSetting.Value -ne $actualSettingValue) {
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Value doesnt match"
+                $testState = $false
+            }
+            else {
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Value matches"
+                $testState = $true
+            }
 
+
+            #Create custom output object 
+            $testResult = [PSCustomObject]@{
+                SettingName   = $expectedSetting.Name
+                TestState     = $testState 
+                ExpectedValue = $expectedSetting.Value
+                ActualValue   = $actualSettingValue
+            }
+
+            Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Results: $($testResult | Convertto-json)"
+
+            #Add custom output to the overall results 
+            $configurationComparison += $testResult
+        }
     }
 
-    end{
+    end {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
         return $configurationComparison
     }
