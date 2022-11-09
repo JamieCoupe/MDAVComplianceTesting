@@ -27,8 +27,7 @@ function Set-MDAVConfig {
                 $possibleValues = Get-ExpectedConfig
             }
         }
-        
-
+        $newConfig = @{}
 
         Foreach ($setting in $possibleValues.GetEnumerator()) {
             $settingName = $setting.name
@@ -42,6 +41,7 @@ function Set-MDAVConfig {
                 }
             }
             
+            $newConfig[$settingName] = $valueToSet
             
             Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Name: $($settingName)"
             Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Possible Values: $($settingPossibleValues)"
@@ -67,5 +67,6 @@ function Set-MDAVConfig {
 
     end {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
+        return $newConfig
     }
 }

@@ -52,7 +52,6 @@ function Measure-MDAVCompliance {
         }
 
         $complianceResults['OverallStatus'] = $overallStatus
-
         
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): #########################Overall-Results#########################"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): All Tests Passed: $($overallStatus)"

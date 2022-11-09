@@ -3,7 +3,8 @@ function Test-ComplianceFunction {
     param(
         [Parameter(Mandatory = $false)]
         [int]
-        $LoopNumber = 10)
+        $LoopNumber = 10
+        )
 
     begin {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
@@ -19,32 +20,44 @@ function Test-ComplianceFunction {
 
     process {
         $results = @{MetaData = $metaData }
+        $results = @{ExpectedConfigTests = @() }
         $rawData = @()
         $counter = 1 
 
         ## Execute Tests 
-        While ($counter -le $LoopNumber){
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Test #$($counter)/$($LoopNumber)"
+        While ($counter -le $LoopNumber) {
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Test $($counter)/$($LoopNumber)"
 
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Random Config"
-            try{
-                Set-MDAVConfig -Mode Random -Verbose:$false
+            
+            try {
+                $randomNumber = Get-Random -Minimum 1 -Maximum 10
+                if($randomNumber -eq 7){
+                    Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Secure Config"
+                    $newConfig = Set-MDAVConfig -Mode Secure -Verbose:$false
+                    $results.ExpectedConfigTests += $counter
+                } else { 
+                    Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Random Config"
+                    $newConfig = Set-MDAVConfig -Mode Random -Verbose:$false
+                }
+                
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"
-            } catch { 
+            }
+            catch { 
                 $err = $_ 
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed"
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
             }
 
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Measuring Compliance"
-            try{
+            try {
                 $rawData += [PSCustomObject]@{
                     TestNumber = $counter
-                    Data = Measure-MDAVCompliance -TestTitle "Script Test - $($counter) of $($LoopNumber)" -Verbose:$false
+                    Data       = Measure-MDAVCompliance -TestTitle "Script Test - $($counter) of $($LoopNumber)" -Verbose:$false
                 } 
                 
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"
-            } catch { 
+            }
+            catch { 
                 $err = $_ 
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed"
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
@@ -53,11 +66,19 @@ function Test-ComplianceFunction {
             $counter++
         }
 
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Resetting Secure Configuration"
-        Set-MDAVConfig -Mode Secure -Verbose:$false
+        try { 
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Resetting to Secure Configuration"
+            Set-MDAVConfig -Mode Secure -Verbose:$false
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"
+        }
+        catch {
+            $err = $_ 
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
+
+        }
 
         $results['RawData'] = $rawData
-
         ##Summarize Results
     }
 
