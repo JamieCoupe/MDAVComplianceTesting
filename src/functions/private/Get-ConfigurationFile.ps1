@@ -3,7 +3,7 @@ function Get-ConfigurationFile {
     param (
         # Parameter help description
         [Parameter(Mandatory=$true)]
-        [ValidateSet('Expected_Config')]
+        [ValidateSet('Expected_Config', 'Module')]
         [String]
         $ConfigurationFile
     )
