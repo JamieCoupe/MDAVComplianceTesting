@@ -20,7 +20,7 @@ function Test-ComplianceFunction {
 
     process {
         $results = @{MetaData = $metaData }
-        $results = @{ExpectedConfigTests = @() }
+        $results += @{ExpectedConfigTests = @() }
         $rawData = @()
         $counter = 1 
 
@@ -33,11 +33,11 @@ function Test-ComplianceFunction {
                 $randomNumber = Get-Random -Minimum 1 -Maximum 10
                 if($randomNumber -eq 7){
                     Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Secure Config"
-                    $newConfig = Set-MDAVConfig -Mode Secure -Verbose:$false
+                    Set-MDAVConfig -Mode Secure -Verbose:$false
                     $results.ExpectedConfigTests += $counter
                 } else { 
                     Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Random Config"
-                    $newConfig = Set-MDAVConfig -Mode Random -Verbose:$false
+                    Set-MDAVConfig -Mode Random -Verbose:$false
                 }
                 
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"

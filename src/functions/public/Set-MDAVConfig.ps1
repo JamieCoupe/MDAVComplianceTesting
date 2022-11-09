@@ -67,6 +67,6 @@ function Set-MDAVConfig {
 
     end {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
-        return $newConfig
+        #return $newConfig
     }
 }
