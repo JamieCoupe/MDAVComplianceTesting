@@ -18,7 +18,7 @@ function Get-ExpectedConfig {
             #Print Error and Exit function if cant get expected config
             $err = $_
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error getting expected config: $($err)"
-            exit(1)
+            Throw "Error getting expected config"
         }
     }
 

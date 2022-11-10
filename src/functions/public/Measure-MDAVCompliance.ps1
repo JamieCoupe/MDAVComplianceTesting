@@ -1,3 +1,44 @@
+<#
+.SYNOPSIS
+
+Measures the compliance level of MDAV security control.
+
+.DESCRIPTION
+
+Measures the compliance level of MDAV security control.
+Compares the actual config to an expected config and generates a report as a PowerShell object.
+
+.PARAMETER ExpectedConfiguration
+Specifies the expected configuration if the default on in the configuration file is not be be used. Optional. 
+
+.PARAMETER TestTitle
+Specifies the title of the test if the default is not to be user. Optional. 
+
+.INPUTS
+
+None. You cannot pipe objects to Measure-MDAVCompliance
+
+.OUTPUTS
+
+System.Object. Measure-MDAVCompliance returns an object with the compliance results and metadata for the MDAV security control 
+
+.EXAMPLE
+
+PS> Measure-MDAVCompliance
+
+.EXAMPLE
+
+PS> Measure-MDAVCompliance -TestTitle "Example"
+
+.EXAMPLE
+
+PS> Measure-MDAVCompliance -TestTitle "ExampleTitle" -ExpectedConfiguration $ExpectedConfigurationHashtable
+
+.LINK
+
+http://www.fabrikam.com/extension.html
+
+#>
 function Measure-MDAVCompliance { 
     [Cmdletbinding()]
     param(
