@@ -47,7 +47,10 @@ function Measure-MDAVCompliance {
         $ExpectedConfiguration,
         [Parameter(Mandatory = $false)]
         [String]
-        $TestTitle = "MDAV Compliance Scan"
+        $TestTitle = "MDAV Compliance Scan",
+        [Parameter(Mandatory = $false)]
+        [String]
+        $OutputPath
     )
 
     begin {
@@ -66,7 +69,7 @@ function Measure-MDAVCompliance {
         Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Filtered actual config = $($actualConfiguration | ConvertTo-Json)"
         Write-Debug -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Formatted expected config = $($expectedConfiguration | ConvertTo-Json)"
 
-        $complianceResults = @{Title = $TestTitle }
+        $complianceResults = [ordered]@{Title = $TestTitle }
         $complianceResults['Hostname'] = [System.Net.Dns]::GetHostName()
         $complianceResults['User'] = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
         $complianceResults['TimeStarted'] = Get-TimeStamp
@@ -81,10 +84,11 @@ function Measure-MDAVCompliance {
 
         #Get overall fail/pass
         $overallStatus = $false
+        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): unique count : $(($complianceResults.rawdata.teststate | Sort-Object -unique).count)"
         if (($complianceResults.rawdata.teststate | Sort-Object -unique).count -gt 1) {
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Not all tests passed"
         }
-        elseif (($complianceResults.rawdata.teststate | Sort-Object -unique).count -eq 0 -and ($complianceResults.rawdata.teststate | Sort-Object -unique -eq $true)) {
+        elseif (($complianceResults.rawdata.teststate | Sort-Object -unique).count -eq 1 -and (($complianceResults.rawdata.teststate | Sort-Object -unique) -eq $true)) {
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): All tests passed"
             $overallStatus = $true
         }
@@ -93,7 +97,7 @@ function Measure-MDAVCompliance {
         }
 
         $complianceResults['OverallStatus'] = $overallStatus
-        
+        $complianceResults['TimeEnded'] = Get-TimeStamp
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): #########################Overall-Results#########################"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): All Tests Passed: $($overallStatus)"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): #########################Overall-Results#########################"
@@ -101,6 +105,19 @@ function Measure-MDAVCompliance {
 
 
     end {
+        if ($OutputPath) {
+            try {
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Writing to File: $($OutputPath)"
+                $complianceResults | Convertto-Json -Depth 100 | Out-File $OutputPath
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"
+            }
+            catch { 
+                $err = $_ 
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed"
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
+            }
+            
+        }
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
         return  $complianceResults
     }

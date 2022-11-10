@@ -3,15 +3,18 @@ function Test-ComplianceFunction {
     param(
         [Parameter(Mandatory = $false)]
         [int]
-        $LoopNumber = 10
-        )
+        $LoopNumber = 10,
+        [Parameter(Mandatory = $false)]
+        [String]
+        $OutputPath
+    )
 
     begin {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
         $metaData = @{
             Hostname       = [System.Net.Dns]::GetHostName()
             User           = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-            TestStartTime  = "[{0:MM/dd/yy}-{0:HH:mm:ss}]" -f (Get-Date)
+            TimeStarted  = "[{0:MM/dd/yy}-{0:HH:mm:ss}]" -f (Get-Date)
             NumberOfLoops  = $LoopNumber 
             ExpectedConfig = Get-ExpectedConfig
         }
@@ -19,7 +22,7 @@ function Test-ComplianceFunction {
     }
 
     process {
-        $results = @{MetaData = $metaData }
+        $results = [ordered]@{MetaData = $metaData }
         $results += @{ExpectedConfigTests = @() }
         $rawData = @()
         $counter = 1 
@@ -31,11 +34,12 @@ function Test-ComplianceFunction {
             
             try {
                 $randomNumber = Get-Random -Minimum 1 -Maximum 10
-                if($randomNumber -eq 7){
+                if ($randomNumber -eq 7) {
                     Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Secure Config"
                     Set-MDAVConfig -Mode Secure -Verbose:$false
                     $results.ExpectedConfigTests += $counter
-                } else { 
+                }
+                else { 
                     Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Random Config"
                     Set-MDAVConfig -Mode Random -Verbose:$false
                 }
@@ -77,12 +81,25 @@ function Test-ComplianceFunction {
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
 
         }
-
+        $results['MetaData']['TimeEnded'] = Get-TimeStamp
         $results['RawData'] = $rawData
-        ##Summarize Results
+        
     }
 
     end {
+        if ($OutputPath) {
+            try {
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Writing to File: $($OutputPath)"
+                $results | Convertto-Json -Depth 100 | Out-File $OutputPath
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Success"
+            }
+            catch { 
+                $err = $_ 
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed"
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Error: $($err)"
+            }
+            
+        }
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
         return $results 
     }
