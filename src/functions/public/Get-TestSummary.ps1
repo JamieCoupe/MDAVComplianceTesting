@@ -43,14 +43,16 @@ function Get-TestSummary {
         $totalNumberOfTests = $testJson.metadata.NumberOfLoops
         $testHostname = $testJson.metadata.Hostname
         $testUsername = $testJson.metadata.User
-        $TestTime = $testJson.metadata.TimeStarted
+        $TestStartTime = $testJson.metadata.TimeStarted
+        $TestEndTime = $testJson.metadata.TimeEnded
         $expectedConfigTests = $testjson.ExpectedConfigTests
 
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): ######### Test-Metadata ########"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): # Test Host: $($testHostname)"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): # Test User: $($testUsername)"
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): # Test Time: $($TestTime)"
-        
+        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): # Test Start Time: $($TestStartTime)"
+        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): # Test End Time: $($TestEndTime)"
+
         ####
         # Print overall data for numbers
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): ######### Test-Summary ########"
