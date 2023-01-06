@@ -3,7 +3,7 @@ function Get-ConfigurationFile {
     param (
         # Parameter help description
         [Parameter(Mandatory=$true)]
-        [ValidateSet('Expected_Config', 'Module')]
+        [ValidateSet('Expected_Config', 'Module', 'Setting_Mapping')]
         [String]
         $ConfigurationFile
     )
@@ -21,6 +21,9 @@ function Get-ConfigurationFile {
             }
             'Expected_config' {
                 $configurationFilePath = "$($srcDirectory)\dependencies\expected_mdav_config.psd1"
+            }
+            'Setting_Mapping' {
+                $configurationFilePath = "$($srcDirectory)\dependencies\gpo_mppreference_mapping.psd1"
             }
         }
 
