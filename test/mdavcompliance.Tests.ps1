@@ -1,4 +1,4 @@
-. .\Import.ps1
+. $PSScriptRoot\Import.ps1
 
 BeforeTest
 
