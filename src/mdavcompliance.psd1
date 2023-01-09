@@ -69,13 +69,13 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @(
-        'Set-MDAVConfig',
-        'Measure-MDAVCompliance',
-        'Test-ComplianceFunction',
-        'Get-TestSummary',
-        'Get-GPOComplianceSettings'
-    )
+    FunctionsToExport = '*'#(
+        # 'Set-MDAVConfig',
+        # 'Measure-MDAVCompliance',
+        # 'Test-ComplianceFunction',
+        # 'Get-TestSummary',
+        # 'Get-GPOComplianceSettings'
+    #)
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
@@ -119,7 +119,7 @@
             # Prerelease = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-            RequireLicenseAcceptance = $true
+            #RequireLicenseAcceptance = $true
 
             # External dependent modules of this module
             # ExternalModuleDependencies = @()

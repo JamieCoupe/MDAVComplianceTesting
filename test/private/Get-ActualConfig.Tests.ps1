@@ -1,8 +1,9 @@
-. $PSScriptRoot\..\Import.ps1
+#. $PSScriptRoot\..\Import.ps1
+. $PSScriptRoot\..\..\src\functions\private\Get-ActualConfig.ps1
 
-$function = Get-TestFileName -Path $MyInvocation.MyCommand.Path
-
-BeforeTest
+#$function = Get-TestFileName -Path $MyInvocation.MyCommand.Path
+$function = "test"
+#BeforeTest
 
 Describe $function -Tags ('unit') {
     Context "$function : Function Tests" { 
@@ -37,5 +38,3 @@ Describe $function -Tags ('unit') {
         }
     }
 }
-
-AfterTest

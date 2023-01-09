@@ -12,7 +12,7 @@ function Set-MDAVConfig {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Mode = $($Mode)"
 
         #Check for Admin
-        if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        if (!$(Get-IsAdmin)) {
             Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): User Needs to be admin to execute this scrambler otherwise it will fail"
             Throw "User needs to be admin to scramble config"
         }

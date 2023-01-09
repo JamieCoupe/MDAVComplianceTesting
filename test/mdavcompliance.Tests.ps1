@@ -52,5 +52,3 @@ Describe $module -Tags ('unit'){
         }
     }
 }
-
-AfterTest

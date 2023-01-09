@@ -16,6 +16,7 @@ $global:moduleTests = $here
 
 #Import Function for prior to tests
 function BeforeTest { 
+    write-host "Before Test"
     Import-Module $moduleManifest.FullName -Scope Global
 }
 
