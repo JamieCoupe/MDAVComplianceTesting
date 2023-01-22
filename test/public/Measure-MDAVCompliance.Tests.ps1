@@ -39,20 +39,22 @@ Describe $module -Tags ('unit') {
         Context "Handles ExpectedConfig parameter" { 
             It "Gets Expected Config when its not passed as parameter" {
                 Mock Get-ExpectedConfig { return @{
-                    DisableRealTimeMonitoring = $false
-                } }
+                        DisableRealTimeMonitoring = $false
+                    } }
                 Measure-MDAVCompliance
-                Assert-MockCalled Measure-MDAVCompliance 
+                Assert-MockCalled Get-ExpectedConfig
             }
 
             It "Gets Actual Config " {
-                Mock Get-ActualConfig {  }
+                Mock Get-ActualConfig { return @{
+                        DisableRealTimeMonitoring = $false
+                    } }
                 Measure-MDAVCompliance
                 Assert-MockCalled Get-ActualConfig 
             }
         }
 
-        Context "Calls Compare-MdavConfiguration"{
+        Context "Calls Compare-MdavConfiguration" {
             It "Calls the compare-MdavConfiguration function" { 
                 Mock Compare-MDAVConfiguration
                 Measure-MDAVCompliance
@@ -60,19 +62,11 @@ Describe $module -Tags ('unit') {
             }
         }
 
-        Context "Handles OverallStatus value"{
-            It "Sets Overall status to false when not all pass"{
-                $false | Should -be $true
-            }
-
-            It "Sets Overall status to true when all pass"{
-                $false | Should -be $true
-            }
-        }
-
         Context "Outputs the Content Correctly" { 
-            It "Outputs to file when called"{ 
-                $false | Should -be $true
+            It "Outputs to file when called" { 
+                Mock Out-File {}
+                Measure-MDAVCompliance -OutputPath "Testdrive:test.json"
+                Assert-MockCalled Out-File
             }
         }
     }

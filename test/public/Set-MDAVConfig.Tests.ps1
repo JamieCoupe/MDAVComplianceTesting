@@ -37,13 +37,13 @@ Describe $module -Tags ('unit') {
         Context "Checks Admin" {
             It "Throws exception if not admin" {
                 Mock Get-IsAdmin { return $false }
-                Mock Set-MpPreference
+                Mock Set-MpPreference {}
                 { Set-MDAVConfig -Mode Secure } | Should -Throw
             }
 
             It "Continues if admin" {
                 Mock Get-IsAdmin { return $true }
-                Mock Set-MpPreference
+                Mock Set-MpPreference{}
                 { Set-MDAVConfig -Mode Secure } | Should -Not -Throw "User needs to be admin to scramble config"
             }
         }

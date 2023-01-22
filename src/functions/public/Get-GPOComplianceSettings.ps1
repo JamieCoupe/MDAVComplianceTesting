@@ -25,8 +25,13 @@ function Get-GPOComplianceSettings {
     )
 
     begin {
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
-        Import-Module GroupPolicy -Verbose:$false
+        try {
+            Import-Module GroupPolicy -Verbose:$false
+        }
+        catch { 
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed to import GroupPolicy module. Is it available?"
+            Throw "Failed to import GroupPolicy module"
+        }
         $settingMap = Get-ConfigurationFile -ConfigurationFile Setting_Mapping -verbose:$false
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Map loaded"
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): $($settingMap.count) Settings "
@@ -79,12 +84,19 @@ function Get-GPOComplianceSettings {
                     Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Inverted Value"
                     $desiredValue = !$desiredValue
                 }
-                else {
-                    Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Non Inverted Value"
-                }
+            }
 
-                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Compliance Expected Value = $($desiredValue)"
-                $expectedConfig[$setting.name] = $desiredValue
+            # Explicilty handle default threat actions  
+            if ($setting -eq "Specify threat alert levels at which default action should not be taken when detected") {
+                $setLevels = ($policySettings | Where-Object Name -eq $setting).listbox.value.element.data
+                
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): SetLevels = $($SetLevels | Convertto-json)"
+
+                $gpoConfiguration["LowThreatDefaultAction"] = $setLevels[0]
+                $gpoConfiguration["ModerateThreatDefaultAction"] =  $setLevels[1]
+                $gpoConfiguration["HighThreatDefaultAction"] = $setLevels[2]
+                $gpoConfiguration["SevereThreatDefaultAction"] =  $setLevels[3] 
+                continue
             }
             elseif ($setting.value.AdditionalSetting -eq "ListBox") { 
                 #If additional info 
