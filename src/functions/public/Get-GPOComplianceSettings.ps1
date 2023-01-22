@@ -94,7 +94,7 @@ function Get-GPOComplianceSettings {
                 #Table Mapping 
                 $severities = @{
                     '1' = "Low"
-                    '2' = "Medium"
+                    '2' = "Moderate"
                     '4' = "High"
                     '5' = "Severe"
                 }
