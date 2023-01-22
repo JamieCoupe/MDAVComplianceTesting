@@ -27,7 +27,9 @@ function Get-GPOComplianceSettings {
     begin {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
         Import-Module GroupPolicy -Verbose:$false
-        $settingMapping = Get-ConfigurationFile -ConfigurationFile Setting_Mapping -verbose:$false
+        $settingMap = Get-ConfigurationFile -ConfigurationFile Setting_Mapping -verbose:$false
+        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Setting Map loaded"
+        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): $($settingMap.count) Settings "
     }
 
     process {
@@ -46,58 +48,77 @@ function Get-GPOComplianceSettings {
         $policySettings = $xmlReport.gpo.Computer.ExtensionData.Extension.Policy
         $policyNames = $policySettings.Name
         # Convert from GPO to get-mppreference settings 
-        $gpoConfiguration = @{}
+        $expectedConfig = @{}
+        
+        #Iterate Through Each setting in the map
+        foreach ($setting in $settingMap.GetEnumerator()) {
+            # return $setting
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Extracting $($setting.name)"
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): GPOLabel =  $($setting.value.GPOLabel)"
 
-        foreach ($setting in $policyNames) {
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): GPO setting: $($setting)"
-            
-            #Get Settings and Value 
-            $desiredSetting = ($settingMapping.GetEnumerator() | Where-Object value -eq $setting).name   
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Desired Setting: $($desiredSetting)"
-            
-            $desiredValueState = ($policySettings | Where-Object Name -eq $setting).state
-            
-            # Convert to MP-Preference Format
-            Switch ($desiredValueState) {
-                'Enabled' {
-                    $desiredValue = $true
-                }
-                'Disabled' {
-                    $desiredValue = $false
-                }
-            }
+            #Extract the GPO Lable and its additional info
+            $policySetting = $policySettings | Where-Object -Property Name -eq $setting.value.GPOLabel
 
-            # Explicilty handle default threat actions  
-            if ($setting -eq "Specify threat alert levels at which default action should not be taken when detected") {
-                $setLevels = ($policySettings | Where-Object Name -eq $setting).listbox.value.element.data
+            #Extract the GPO Lable and its additional info 
+            #if additional info false 
+            if ($setting.value.AdditionalSetting -eq $false -OR $setting.value.AdditionalSetting -eq "DropDownList") {
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): No additional Information Or DropDownList"
+                $gpoValue = $policySetting.state
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): GPO State = $($policySetting.state)"
                 
-                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): SetLevels = $($SetLevels | Convertto-json)"
+                switch ($gpoValue) {
+                    'Enabled' { 
+                        $desiredValue = $true
+                    } 'Disabled' { 
+                        $desiredValue = $false
+                    }
+                }
 
-                $gpoConfiguration["LowThreatDefaultAction"] = $setLevels[0]
-                $gpoConfiguration["ModerateThreatDefaultAction"] =  $setLevels[1]
-                $gpoConfiguration["HighThreatDefaultAction"] = $setLevels[2]
-                $gpoConfiguration["SevereThreatDefaultAction"] =  $setLevels[3] 
-                continue
+                #Invert if required 
+                if ($setting.value.inverted) {
+                    #Flip 
+                    Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Inverted Value"
+                    $desiredValue = !$desiredValue
+                }
+                else {
+                    Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Non Inverted Value"
+                }
+
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Compliance Expected Value = $($desiredValue)"
+                $expectedConfig[$setting.name] = $desiredValue
             }
+            elseif ($setting.value.AdditionalSetting -eq "ListBox") { 
+                #If additional info 
+                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Additional Information = ListBox"
+                $tableRows = $policySetting.ListBox.value.element
 
-            #Explicitly Handle Maps Config
-            if ($setting -eq "Join Microsoft MAPS") {
-                $desiredSetting = $setting
+                #Table Mapping 
+                $severities = @{
+                    '1' = "Low"
+                    '2' = "Medium"
+                    '4' = "High"
+                    '5' = "Severe"
+                }
                 
-#$desiredValue =  
+                $actions = @{
+                    2 = "quarantine"
+                    3 = "remove"
+                    6 = "ignore"
+                }
 
-            }
-
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Desired ValueState = $($desiredValueState)"
-            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Desired Value = $($desiredValue)"
-            $gpoConfiguration[$desiredSetting] = $desiredValue
+                Foreach ($row in $tableRows) {
+                    $severity = $severities[$row.name]
+                    $action = $row.data
+                    $expectedConfig["$($severity)ThreatDefaultAction"] = $action
+                }
+            } 
         }
     }
 
 
     end {
         Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Finished Execution"
-        #return $gpoConfiguration
-        return $policySettings
+        return $expectedConfig
+        #return $policySettings
     }
 }
