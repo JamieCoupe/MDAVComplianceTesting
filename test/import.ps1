@@ -1,7 +1,5 @@
 $here = Split-Path -Parent -Path $MyInvocation.MyCommand.Path -ErrorAction Stop
 
-write-host "here = $($here)"
-
 #Dot Source Pester functions 
 if(Test-Path (Join-Path -Path $here -ChildPath 'helpers')){
     Get-ChildItem -Path (Join-Path -Path $here -ChildPath 'helpers') -Filter '*.ps1' -File | 
@@ -16,7 +14,6 @@ $global:moduleTests = $here
 
 #Import Function for prior to tests
 function BeforeTest { 
-    write-host "Before Test"
     Import-Module $moduleManifest.FullName -Scope Global
 }
 

@@ -25,8 +25,14 @@ function Get-GPOComplianceSettings {
     )
 
     begin {
-        Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Started Execution"
-        Import-Module GroupPolicy -Verbose:$false
+      
+        try {
+            Import-Module GroupPolicy -Verbose:$false
+        }
+        catch { 
+            Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Failed to import GroupPolicy module. Is it available?"
+            Throw "Failed to import GroupPolicy module"
+        }
         $settingMapping = Get-ConfigurationFile -ConfigurationFile Setting_Mapping -verbose:$false
     }
 
@@ -74,9 +80,9 @@ function Get-GPOComplianceSettings {
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): SetLevels = $($SetLevels | Convertto-json)"
 
                 $gpoConfiguration["LowThreatDefaultAction"] = $setLevels[0]
-                $gpoConfiguration["ModerateThreatDefaultAction"] =  $setLevels[1]
+                $gpoConfiguration["ModerateThreatDefaultAction"] = $setLevels[1]
                 $gpoConfiguration["HighThreatDefaultAction"] = $setLevels[2]
-                $gpoConfiguration["SevereThreatDefaultAction"] =  $setLevels[3] 
+                $gpoConfiguration["SevereThreatDefaultAction"] = $setLevels[3] 
                 continue
             }
 
@@ -84,7 +90,7 @@ function Get-GPOComplianceSettings {
             if ($setting -eq "Join Microsoft MAPS") {
                 $desiredSetting = $setting
                 
-#$desiredValue =  
+                #$desiredValue =  
 
             }
 

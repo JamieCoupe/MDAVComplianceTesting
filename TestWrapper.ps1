@@ -9,7 +9,7 @@ $ConfigAll = [PesterConfiguration]@{
         Passthru = $true
     }
     Output = @{
-        Verbosity = 'Detailed'
+        # Verbosity = 'Detailed'
     }
 }
 
