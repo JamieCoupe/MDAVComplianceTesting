@@ -25,6 +25,7 @@ function Get-GPOComplianceSettings {
     )
 
     begin {
+      
         try {
             Import-Module GroupPolicy -Verbose:$false
         }
@@ -51,6 +52,7 @@ function Get-GPOComplianceSettings {
         }
 
         $policySettings = $xmlReport.gpo.Computer.ExtensionData.Extension.Policy
+        $policyNames = $policySettings.Name
         # Convert from GPO to get-mppreference settings 
         $expectedConfig = @{}
         
@@ -86,18 +88,6 @@ function Get-GPOComplianceSettings {
                 }
             }
 
-            # Explicilty handle default threat actions  
-            if ($setting -eq "Specify threat alert levels at which default action should not be taken when detected") {
-                $setLevels = ($policySettings | Where-Object Name -eq $setting).listbox.value.element.data
-                
-                Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): SetLevels = $($SetLevels | Convertto-json)"
-
-                $gpoConfiguration["LowThreatDefaultAction"] = $setLevels[0]
-                $gpoConfiguration["ModerateThreatDefaultAction"] =  $setLevels[1]
-                $gpoConfiguration["HighThreatDefaultAction"] = $setLevels[2]
-                $gpoConfiguration["SevereThreatDefaultAction"] =  $setLevels[3] 
-                continue
-            }
             elseif ($setting.value.AdditionalSetting -eq "ListBox") { 
                 #If additional info 
                 Write-Verbose -Message "$(Get-TimeStamp): $($MyInvocation.MyCommand): Additional Information = ListBox"
@@ -106,25 +96,21 @@ function Get-GPOComplianceSettings {
                 #Table Mapping 
                 $severities = @{
                     '1' = "Low"
-                    '2' = "Moderate"
+                    '2' = "Medium"
                     '4' = "High"
                     '5' = "Severe"
                 }
-                
-                # $actions = @{
-                #     2 = "quarantine"
-                #     3 = "remove"
-                #     6 = "ignore"
-                # }
 
-                Foreach ($row in $tableRows) {
-                    $severity = $severities[$row.name]
-                    $action = $row.data
-                    $expectedConfig["$($severity)ThreatDefaultAction"] = $action
-                }
-            } 
-        }
+            }
+
+            Foreach ($row in $tableRows) {
+                $severity = $severities[$row.name]
+                $action = $row.data
+                $expectedConfig["$($severity)ThreatDefaultAction"] = $action
+            }
+        } 
     }
+    
 
 
     end {
