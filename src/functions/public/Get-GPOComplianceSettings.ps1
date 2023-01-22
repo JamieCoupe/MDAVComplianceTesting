@@ -46,7 +46,6 @@ function Get-GPOComplianceSettings {
         }
 
         $policySettings = $xmlReport.gpo.Computer.ExtensionData.Extension.Policy
-        $policyNames = $policySettings.Name
         # Convert from GPO to get-mppreference settings 
         $expectedConfig = @{}
         
@@ -100,11 +99,11 @@ function Get-GPOComplianceSettings {
                     '5' = "Severe"
                 }
                 
-                $actions = @{
-                    2 = "quarantine"
-                    3 = "remove"
-                    6 = "ignore"
-                }
+                # $actions = @{
+                #     2 = "quarantine"
+                #     3 = "remove"
+                #     6 = "ignore"
+                # }
 
                 Foreach ($row in $tableRows) {
                     $severity = $severities[$row.name]
