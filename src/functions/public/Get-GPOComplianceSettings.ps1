@@ -52,7 +52,6 @@ function Get-GPOComplianceSettings {
         }
 
         $policySettings = $xmlReport.gpo.Computer.ExtensionData.Extension.Policy
-        $policyNames = $policySettings.Name
         # Convert from GPO to get-mppreference settings 
         $expectedConfig = @{}
         
