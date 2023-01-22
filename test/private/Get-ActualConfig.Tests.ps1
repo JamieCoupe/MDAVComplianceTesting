@@ -1,23 +1,40 @@
-. .\Import.ps1
+#. $PSScriptRoot\..\Import.ps1
+. $PSScriptRoot\..\..\src\functions\private\Get-ActualConfig.ps1
 
-BeforeTest
+#$function = Get-TestFileName -Path $MyInvocation.MyCommand.Path
+$function = "test"
+#BeforeTest
 
-Describe $module -Tags ('unit'){
-    Context "$module : Module Tests" { 
+Describe $function -Tags ('unit') {
+    Context "$function : Function Tests" { 
         Context "Parameter Tests" { 
-            Context "Exist" { 
+            Context "ExpectedConfiguration" { 
+                It "Should Exist" {
+                    Get-Command Get-ActualConfig | Should -HaveParameter ExpectedConfiguration 
+                }
 
+                # It "Should be Mandatory" { 
+                #     (Get-Command Get-ActualConfig).parameters['ExpectedConfiguration'].Attributes.Mandatory | Should -be $true
+                # }
             } 
             
-            Context "Mandatory if required" { 
-                
+        }
+
+        Context "Functionality Tests" {
+            # It "Calls Get-MpPreference function" {
+            #     Mock Get-MpPreference { }
+            #     $testJson = @{"DisableRealTimeMonitoring" = $true} | Convertto-Json
+            #     Get-ActualConfig -ExpectedConfiguration $testJson
+            #     Assert-MockCalled Get-MpPreference
+            # }
+           
+            It "Returns a hash table" {
+
             }
 
-            Context "Validate Set is correct" { 
+            It "Returns valid tables" {
 
             }
         }
     }
 }
-
-AfterTest

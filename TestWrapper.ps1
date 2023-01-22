@@ -1,5 +1,5 @@
 Import-Module Pester -Passthru
-. $PSScriptRoot\Import.ps1
+. $PSScriptRoot\test\Import.ps1
 
 BeforeTest
 
