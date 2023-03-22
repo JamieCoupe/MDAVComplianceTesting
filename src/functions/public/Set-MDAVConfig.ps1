@@ -1,3 +1,39 @@
+<#
+.SYNOPSIS
+
+A supporting function and not part of the core compliance scanner. Sets the configuration of MDAV to a secure configuration (the expected on in dependencies) or a random config
+
+.DESCRIPTION
+
+Sets the configuration of MDAV to a secure configuration (the expected on in dependencies) or a random config
+
+
+.PARAMETER Mode
+
+Determines if Set-MDAVConfig applies the secure or the random config
+
+.INPUTS
+
+None. You cannot pipe objects to Set-MDAVConfig
+
+.OUTPUTS
+
+None. 
+
+.EXAMPLE
+
+PS> Set-MDAVConfig -Mode Secure
+
+.EXAMPLE
+
+PS> Set-MDAVConfig -Mode Random -verbose
+
+
+.LINK
+
+https://github.com/JamieCoupe/MDAVComplianceTesting
+
+#>
 function Set-MDAVConfig { 
     [Cmdletbinding()]
     param(

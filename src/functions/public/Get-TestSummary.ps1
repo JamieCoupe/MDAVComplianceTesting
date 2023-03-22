@@ -1,19 +1,39 @@
 <#
 .SYNOPSIS
 
+A supporting function and not part of the core compliance scanner. Calculates the metrics used to measure the compliance scanners accuracy. 
 
 .DESCRIPTION
 
+A supporting function and not part of the core compliance scanner. Calculates the metrics used to measure the compliance scanners accuracy. 
 
+.PARAMETER TestResultPath
+
+The path to the test object returned but Measure-MDAVCompliance 
+
+.INPUTS
+
+None. You cannot pipe objects to Get-TestSummary
+
+.OUTPUTS
+
+Json. The statistices are ouput as JSON and can be captured but assigning a varible to it, as shown in example 2. 
 
 .EXAMPLE
 
-PS> Get-TestSummary
+PS> Get-TestSummary -TestResultPath $path
 
+.EXAMPLE
+
+PS> $test_results = Get-TestSummary -TestResultPath $path 
+
+.EXAMPLE
+
+PS> $test_results = Get-TestSummary -TestResultPath $path -verbose
 
 .LINK
 
-
+https://github.com/JamieCoupe/MDAVComplianceTesting
 
 #>
 function Get-TestSummary { 

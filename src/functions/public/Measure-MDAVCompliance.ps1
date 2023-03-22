@@ -36,7 +36,7 @@ PS> Measure-MDAVCompliance -TestTitle "ExampleTitle" -ExpectedConfiguration $Exp
 
 .LINK
 
-http://www.fabrikam.com/extension.html
+https://github.com/JamieCoupe/MDAVComplianceTesting
 
 #>
 function Measure-MDAVCompliance { 

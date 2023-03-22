@@ -9,10 +9,6 @@ Describe $module -Tags ('unit') {
                 It "Exist" { 
                     Get-Command Get-GPOComplianceSettings | Should -HaveParameter GUID 
                 } 
-            
-                It "Mandatory if required" { 
-                    (Get-Command Get-GPOComplianceSettings).Parameters['ExpectedConfiguration'].Attributes.Mandatory | Should -be $true
-                }
             }
         }
 

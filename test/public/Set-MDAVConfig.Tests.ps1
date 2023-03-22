@@ -76,6 +76,7 @@ Describe $module -Tags ('unit') {
         Context "Handles Output" { 
             It "Calls Set-MpPreference" { 
                 Mock Set-MpPreference {}
+                Mock Get-IsAdmin {return $true}
                 Set-MDAVConfig -Mode Secure 
                 Assert-MockCalled Set-MpPreference
             }

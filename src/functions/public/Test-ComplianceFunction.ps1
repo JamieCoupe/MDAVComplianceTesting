@@ -1,3 +1,43 @@
+<#
+.SYNOPSIS
+
+A supporting function and not part of the core compliance scanner. A wrapper for Measure-MDAVCompliance and Set-MDAVConfig to allow for large batches of tests to be run. 
+
+.DESCRIPTION
+
+A wrapper for Measure-MDAVCompliance and Set-MDAVConfig to allow for large batches of tests to be run. 
+
+
+.PARAMETER LoopNumber
+
+The number of test iterations to run
+
+.PARAMETER OutputPath
+
+The path to save the output tests to 
+
+.INPUTS
+
+None. You cannot pipe objects to Test-ComplianceFunction
+
+.OUTPUTS
+
+Returns the test results to stout which can be assigned as in example 2
+
+.EXAMPLE
+
+PS> Test-ComplianceFunction -LoopNumber 10 -OutputPath $path -verbose
+
+.EXAMPLE
+
+PS> $test_results = Test-ComplianceFunction -LoopNumber 10 -OutputPath $path -verbose
+
+
+.LINK
+
+https://github.com/JamieCoupe/MDAVComplianceTesting
+
+#>
 function Test-ComplianceFunction { 
     [Cmdletbinding()]
     param(

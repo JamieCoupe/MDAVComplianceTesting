@@ -1,19 +1,34 @@
 <#
 .SYNOPSIS
 
+Extracts the Defender settings from GPO based on the setting mapping in src/dependencies/gpo_mppreference_mapping file
 
 .DESCRIPTION
 
+This function generats a report of the input GPO (which must be a GPO within the domain this device is part of) and creates a list of PowerShell styled settings. 
 
+.PARAMETER GUID
+The GPO GUID that you wish to extract 
+
+.INPUTS
+
+None. You cannot pipe objects to Get-GPOComplianceSettings
+
+.OUTPUTS
+
+System.Object. Get-GPOComplianceSettings returns an object with extracted settings. This is in the same format as the example within src/dependencies/expected_mdav_confg
 
 .EXAMPLE
 
-PS> Get-GPOComplianceSettings
+PS> Get-GPOComplianceSettings -GUID 4ebceb3b-0104-4fe4-a8f8-c69de0e37921
 
+.EXAMPLE
+
+PS> Get-GPOComplianceSettings -GUID 4ebceb3b-0104-4fe4-a8f8-c69de0e37921 -verbose
 
 .LINK
 
-
+https://github.com/JamieCoupe/MDAVComplianceTesting
 
 #>
 function Get-GPOComplianceSettings { 
